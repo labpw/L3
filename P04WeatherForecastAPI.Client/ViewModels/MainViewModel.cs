@@ -18,7 +18,7 @@ using System.Windows.Input;
 namespace P04WeatherForecastAPI.Client.ViewModels
 {
     // przekazywanie wartosci do innego formularza 
-    public partial class MainViewModelV4 : ObservableObject
+    public partial class MainViewModel : ObservableObject
     {
         private CityViewModel _selectedCity;
         private Weather _weather;
@@ -28,25 +28,26 @@ namespace P04WeatherForecastAPI.Client.ViewModels
         private readonly FavoriteCitiesView _favoriteCitiesView;
         private readonly FavoriteCityViewModel _favoriteCityViewModel;
         //public ICommand LoadCitiesCommand { get;  }
+        private readonly IServiceProvider _serviceProvider;
+
 
         //shop
         private readonly ShopProductsView _shopProductsView;
         private readonly ProductsViewModel _productsViewModel;
 
-        public MainViewModelV4(IAccuWeatherService accuWeatherService, 
+        public MainViewModel(IAccuWeatherService accuWeatherService,
             FavoriteCityViewModel favoriteCityViewModel, FavoriteCitiesView favoriteCitiesView,
-            ProductsViewModel productsViewModel, ShopProductsView shopProductsView
+         IServiceProvider serviceProvider
             )
         {
             _favoriteCitiesView = favoriteCitiesView;
             _favoriteCityViewModel = favoriteCityViewModel;
 
-            _shopProductsView = shopProductsView;
-            _productsViewModel = productsViewModel;
+            _serviceProvider = serviceProvider;
 
-                // _serviceProvider= serviceProvider; 
-                //LoadCitiesCommand = new RelayCommand(x => LoadCities(x as string));
-                _accuWeatherService = accuWeatherService;
+            // _serviceProvider= serviceProvider; 
+            //LoadCitiesCommand = new RelayCommand(x => LoadCities(x as string));
+            _accuWeatherService = accuWeatherService;
             Cities = new ObservableCollection<CityViewModel>(); // podejście nr 2 
 
 
@@ -76,15 +77,15 @@ namespace P04WeatherForecastAPI.Client.ViewModels
             }
         }
 
-         
+
         private async void LoadWeather()
         {
-            if(SelectedCity != null)
+            if (SelectedCity != null)
             {
-                _weather = await _accuWeatherService.GetCurrentConditions(SelectedCity.Key); 
+                _weather = await _accuWeatherService.GetCurrentConditions(SelectedCity.Key);
                 WeatherView = new WeatherViewModel(_weather);
             }
-        } 
+        }
 
         // podajście nr 2 do przechowywania kolekcji obiektów:
         public ObservableCollection<CityViewModel> Cities { get; set; }
@@ -95,7 +96,7 @@ namespace P04WeatherForecastAPI.Client.ViewModels
             // podejście nr 2:
             var cities = await _accuWeatherService.GetLocations(locationName);
             Cities.Clear();
-            foreach (var city in cities) 
+            foreach (var city in cities)
                 Cities.Add(new CityViewModel(city));
         }
 
@@ -110,6 +111,13 @@ namespace P04WeatherForecastAPI.Client.ViewModels
         [RelayCommand]
         public void OpenShopWindow()
         {
+            ShopProductsView _shopProductsView;
+
+            ProductsViewModel _productsViewModel;
+            _shopProductsView = _serviceProvider.GetService<ShopProductsView>();
+            _productsViewModel = _serviceProvider.GetService<ProductsViewModel>();
+
+
             _shopProductsView.Show();
             _productsViewModel.GetProducts();
         }

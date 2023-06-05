@@ -42,33 +42,60 @@ namespace P04WeatherForecastAPI.Client
 
         private void ConfigureServices(IServiceCollection services)
         {
-            // pobranie appsettings z konfiguracji i zmapowanie na klase AppSettings 
-            //Microsoft.Extensions.Options.ConfigurationExtensions
-            var appSettings = _configuration.GetSection("AppSettings");
-            var appSettingsSection = appSettings.Get<AppSettings>();
-            services.Configure<AppSettings>(appSettings);
+            ConfigureAppSettings(services);
 
             // konfiguracja serwisów 
+            ConfigureAppServices(services);
+
+            // konfiguracja viewModeli 
+            ConfigureViewModels(services);
+
+            // konfiguracja okienek 
+            ConfigureWindows(services);
+
+            // konfiguracja HttpClient
+            ConfigureHttpClients(services);
+        }
+
+        private void ConfigureAppSettings(IServiceCollection services)
+        {
+            var appSettings = _configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettings);
+        }
+
+        private void ConfigureAppServices(IServiceCollection services)
+        {
             services.AddSingleton<IAccuWeatherService, AccuWeatherService>();
             services.AddSingleton<IFavoriteCityService, FavoriteCityService>();
             services.AddSingleton<IProductService, ProductService>();
+        }
 
-            // konfiguracja viewModeli 
-            services.AddSingleton<MainViewModelV4>();
+        private void ConfigureViewModels(IServiceCollection services)
+        {
+            services.AddSingleton<MainViewModel>();
             services.AddSingleton<FavoriteCityViewModel>();
             services.AddSingleton<ProductsViewModel>();
-           // services.AddSingleton<BaseViewModel,MainViewModelV3>();
-           
-            // konfiguracja okienek 
+            // services.AddSingleton<BaseViewModel,MainViewModelV3>();
+        }
+
+        private void ConfigureWindows(IServiceCollection services)
+        {
             services.AddTransient<MainWindow>();
             services.AddTransient<FavoriteCitiesView>();
             services.AddTransient<ShopProductsView>();
+        }
 
-            //Microsoft.Extensions.Http
-            services.AddHttpClient<IProductService, ProductService>(client =>
+        private void ConfigureHttpClients(IServiceCollection services)
+        {
+            var appSettingsSection = _configuration.GetSection(nameof(AppSettings)).Get<AppSettings>();
+
+            var uriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
             {
-                client.BaseAddress = new Uri(appSettingsSection.BaseAPIUrl + "/" + appSettingsSection.BaseProductEndpoint.Base_url);
-            });
+                Path = appSettingsSection.BaseProductEndpoint.Base_url
+            };
+
+            services.AddHttpClient<IProductService, ProductService>(client => client.BaseAddress = uriBuilder.Uri);
+          
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
