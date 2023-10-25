@@ -40,8 +40,9 @@ namespace P05Shop.API.Controllers
 
         // PUT: api/Car/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCar([FromBody] Car car)
+        public async Task<IActionResult> UpdateCar(int id, [FromBody] Car car)
         {
+            car.Id = id;
             var response = await _carService.UpdateCarAsync(car);
             if (response.Success)
             {
