@@ -13,7 +13,12 @@ namespace P06Shop.Shared
         public bool Success { get; set; }
 
         public string Message { get; set; }
-    
+    }
 
+    public class ServiceResponse
+    {
+        public bool Success { get; set; }
+
+        public string Message { get; set; }
     }
 }

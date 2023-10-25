@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using P04WeatherForecastAPI.Client.Configuration;
+using P04WeatherForecastAPI.Client.Services.CarService;
 using P04WeatherForecastAPI.Client.Services.ProductServices;
 using P04WeatherForecastAPI.Client.Services.WeatherServices;
 using P04WeatherForecastAPI.Client.ViewModels;
+using P06Shop.Shared.Services.CarService;
 using P06Shop.Shared.Services.ProductService;
 using System;
 using System.Collections.Generic;
@@ -65,6 +67,7 @@ namespace P04WeatherForecastAPI.Client
             services.AddSingleton<IAccuWeatherService, AccuWeatherService>();
             services.AddSingleton<IFavoriteCityService, FavoriteCityService>();
             services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<ICarService, CarService>();
         }
 
         private void ConfigureViewModels(IServiceCollection services)
@@ -74,6 +77,7 @@ namespace P04WeatherForecastAPI.Client
             services.AddSingleton<MainViewModelV4>();
             services.AddSingleton<FavoriteCityViewModel>();
             services.AddSingleton<ProductsViewModel>();
+            services.AddSingleton<CarsViewModel>();
             // services.AddSingleton<BaseViewModel,MainViewModelV3>();
         }
 
@@ -82,17 +86,23 @@ namespace P04WeatherForecastAPI.Client
             // konfiguracja okienek 
             services.AddTransient<MainWindow>();
             services.AddTransient<FavoriteCitiesView>();
+            services.AddTransient<CarsView>();
             services.AddTransient<ShopProductsView>();
         }
 
         private void ConfigureHttpClients(IServiceCollection services, AppSettings appSettingsSection)
         {
-            var uriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
+            var productUriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
             {
                 Path = appSettingsSection.BaseProductEndpoint.Base_url,
             };
+            var carUriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
+            {
+                Path = appSettingsSection.CarsEndpoint.Base_url,
+            };
             //Microsoft.Extensions.Http
-            services.AddHttpClient<IProductService, ProductService>(client => client.BaseAddress = uriBuilder.Uri);
+            services.AddHttpClient<IProductService, ProductService>(client => client.BaseAddress = productUriBuilder.Uri);
+            services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = carUriBuilder.Uri);
         }
 
         private void OnStartup(object sender, StartupEventArgs e)

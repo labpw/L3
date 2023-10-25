@@ -113,5 +113,15 @@ namespace P04WeatherForecastAPI.Client.ViewModels
             shopProductsView.Show();
             productsViewModel.GetProducts();
         }
+
+        [RelayCommand]
+        public void OpenCarsWindow()
+        {
+            CarsView carsView = _serviceProvider.GetService<CarsView>();
+            CarsViewModel carsViewModel = _serviceProvider.GetService<CarsViewModel>();
+
+            carsView.Show();
+            carsViewModel.GetCars();
+        }
     }
 }
