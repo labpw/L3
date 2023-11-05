@@ -1,0 +1,28 @@
+﻿<Window x:Class="P04WeatherForecastAPI.Client.PersonView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:P04WeatherForecastAPI.Client"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PersonView">
+
+    <Grid>
+        <ListView ItemsSource="{Binding People}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <Label Content="{Binding Name}"></Label>
+                        <Label Content="{Binding PhoneNumber}"></Label>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <Button Content="Previous" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding IsPreviousPageEnabled}" />
+            <TextBlock Text="{Binding CurrentPage}" />
+            <Button Content="Next" Command="{Binding NextPageCommand}" IsEnabled="{Binding IsNextPageEnabled}" />
+        </StackPanel>
+    </Grid>
+</Window>

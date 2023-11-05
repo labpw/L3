@@ -2,19 +2,30 @@
 using P06Shop.Shared;
 using P06Shop.Shared.Services.CarService;
 using P07Shop.DataSeeder;
+using P06Shop.API.Services.PersonService;
+using Microsoft.EntityFrameworkCore;
 
 namespace P05Shop.API.Services.CarService
 {
     public class CarService : ICarService
     {
-        private static List<Car> cars = CarSeeder.GenerateCarData();
+        private DataBaseContext dataBaseContext;
+        private readonly IPersonService personService;
+        private readonly ICarBrandService carBrandService;
+
+        public CarService(DataBaseContext dataBaseContext, IPersonService personService, ICarBrandService carBrandService)
+        {
+            this.dataBaseContext = dataBaseContext;
+            this.carBrandService = carBrandService;
+            this.personService = personService;
+        }
 
         public async Task<ServiceResponse<List<Car>>> GetCarsAsync()
         {
             var response = new ServiceResponse<List<Car>>();
             try
             {
-                response.Data = cars;
+                response.Data = dataBaseContext.Cars.Include("CarBrand").Include("PreviousOwner").ToList();
                 response.Success = true;
                 response.Message = "Cars retrieved successfully.";
             }
@@ -31,12 +42,13 @@ namespace P05Shop.API.Services.CarService
             var response = new ServiceResponse();
             try
             {
-                var carToRemove = cars.FirstOrDefault(c => c.Id == carId);
+                var carToRemove = dataBaseContext.Cars.FirstOrDefault(c => c.Id == carId);
                 if (carToRemove != null)
                 {
-                    cars.Remove(carToRemove);
+                    dataBaseContext.Cars.Remove(carToRemove);
                     response.Success = true;
                     response.Message = "Car deleted successfully.";
+                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -57,13 +69,17 @@ namespace P05Shop.API.Services.CarService
             var response = new ServiceResponse();
             try
             {
-                var existingCar = cars.FirstOrDefault(c => c.Id == car.Id);
+                await ValidateCar(car);
+                var existingCar = dataBaseContext.Cars.FirstOrDefault(c => c.Id == car.Id);
                 if (existingCar != null)
                 {
-                    existingCar.Brand = car.Brand;
+                    existingCar.Model = car.Model;
                     existingCar.Power = car.Power;
+                    existingCar.CarBrand = car.CarBrand;
+                    existingCar.PreviousOwner = car.PreviousOwner;
                     response.Success = true;
                     response.Message = "Car updated successfully.";
+                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -84,11 +100,11 @@ namespace P05Shop.API.Services.CarService
             var response = new ServiceResponse();
             try
             {
-                // Generate a new unique Id for the car and add it to the list.
-                car.Id = Random.Shared.Next();
-                cars.Add(car);
+                await ValidateCar(car);
+                dataBaseContext.Cars.Add(car);
                 response.Success = true;
                 response.Message = "Car created successfully.";
+                await dataBaseContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -96,6 +112,27 @@ namespace P05Shop.API.Services.CarService
                 response.Message = "Error while creating car: " + ex.Message;
             }
             return response;
+        }
+        private async Task ValidateCar(Car car)
+        {
+            if (!await DoesPreviousOwnerOfCarExist(car))
+            {
+                throw new Exception("Previous owner does not exist.");
+            }
+            if(!await DoesBrandOfCarExist(car))
+            {
+                throw new Exception("Car Brand does not exist.");
+            }
+        }
+
+        private async Task<bool> DoesPreviousOwnerOfCarExist(Car car)
+        {
+            return car.PreviousOwnerId == null || !(await personService.GetPeopleAsync()).Data.Any(e => e.Id == car.PreviousOwnerId);
+        }
+
+        private async Task<bool> DoesBrandOfCarExist(Car car)
+        {
+            return (await carBrandService.GetCarBrandsAsync()).Data.Any(e => e.Id == car.CarBrandId);
         }
     }
 }

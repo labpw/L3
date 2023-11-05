@@ -1,9 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using P05Shop.API;
 using P05Shop.API.Services.CarService;
 using P05Shop.API.Services.ProductService;
+using P06Shop.API.Services.CarBrandService;
+using P06Shop.API.Services.PersonService;
 using P06Shop.Shared.Services.CarService;
 using P06Shop.Shared.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<DataBaseContext>(options => options.UseNpgsql("Server=localhost;Username=postgres;Database=postgres"));
 
 // Add services to the container.
 
@@ -15,6 +21,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<ICarBrandService, CarBrandService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 // addScoped - obiekt jest tworzony za kazdym razem dla nowego zapytania http
 // jedno zaptranie tworzy jeden obiekt 

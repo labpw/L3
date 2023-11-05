@@ -36,7 +36,7 @@ namespace P04WeatherForecastAPI.Client.Services.CarService
 
         public async Task<ServiceResponse<List<Car>>> GetCarsAsync()
         {
-            var response = await _httpClient.GetAsync(_appSettings.CarsEndpoint.GetAllCarsEndpoint);
+            var response = await _httpClient.GetAsync(_appSettings.CarsEndpoint.GetAll);
             var json = await response.Content.ReadAsStringAsync();
             var content = JsonConvert.DeserializeObject<List<Car>>(json);
             var result = new ServiceResponse<List<Car>>

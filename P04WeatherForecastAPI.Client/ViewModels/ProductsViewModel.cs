@@ -36,6 +36,5 @@ namespace P04WeatherForecastAPI.Client.ViewModels
                 }
             }
         }
-
     }
 }

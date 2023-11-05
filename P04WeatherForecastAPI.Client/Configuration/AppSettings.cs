@@ -13,7 +13,8 @@ namespace P04WeatherForecastAPI.Client.Configuration
         public string BaseAPIUrl { get; set; }
 
         public BaseProductEndpoint BaseProductEndpoint { get; set; }
-        public CarsEndpoint CarsEndpoint { get; set; }
+        public CRUDEndpoints CarsEndpoint { get; set; }
+        public CRUDEndpoints CarBrandsEndpoint { get; set; }
 
     }
 }

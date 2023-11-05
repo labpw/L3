@@ -11,22 +11,27 @@ namespace P06Shop.Shared.Cars
     {
         public int Id { get; set; }
 
-        [RegularExpression("^[a-zA-Z]*$")]
-        public string Brand { get; set; }
+        public string Model { get; set; }
 
         [Range(0, int.MaxValue)]
         public int Power { get; set; }
 
+        public int CarBrandId { get; set; }
+        public CarBrand? CarBrand { get; set; }
+
+        public int? PreviousOwnerId { get; set; }
+        public Person? PreviousOwner { get; set; }
+
         public Car()
         {
             Id = 0;
-            Brand = string.Empty;
+            Model = string.Empty;
             Power = 0;
         }
 
         public Car(string brand, int power)
         {
-            Brand = brand;
+            Model = brand;
             Power = power;
         }
     }

@@ -21,7 +21,7 @@ namespace P05Shop.API.Controllers
             var response = await _carService.GetCarsAsync();
             if (response.Success)
             {
-                return Ok(response.Data);
+                return Ok(response.Data.Select(e => new { e.Id, e.CarBrand, e.PreviousOwner, e.Power, e.Model}));
             }
             return BadRequest(response.Message);
         }
@@ -31,9 +31,11 @@ namespace P05Shop.API.Controllers
         public async Task<IActionResult> CreateCar([FromBody] Car car)
         {
             var response = await _carService.CreateCarAsync(car);
+            car = _carService.GetCarsAsync().Result.Data.FirstOrDefault(e => e.Id == car.Id);
             if (response.Success)
             {
-                return CreatedAtAction(nameof(GetCars), new { id = car.Id }, car);
+                return CreatedAtAction(nameof(GetCars), new { id = car.Id },
+                    new { car.Id, car.CarBrand, car.PreviousOwner, car.Power, car.Model });
             }
             return BadRequest(response.Message);
         }

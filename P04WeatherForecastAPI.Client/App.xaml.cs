@@ -68,6 +68,7 @@ namespace P04WeatherForecastAPI.Client
             services.AddSingleton<IFavoriteCityService, FavoriteCityService>();
             services.AddSingleton<IProductService, ProductService>();
             services.AddSingleton<ICarService, CarService>();
+            services.AddSingleton<ICarBrandService, CarBrandService>();
         }
 
         private void ConfigureViewModels(IServiceCollection services)
@@ -78,6 +79,7 @@ namespace P04WeatherForecastAPI.Client
             services.AddSingleton<FavoriteCityViewModel>();
             services.AddSingleton<ProductsViewModel>();
             services.AddSingleton<CarsViewModel>();
+            services.AddSingleton<CarBrandsViewModel>();
             // services.AddSingleton<BaseViewModel,MainViewModelV3>();
         }
 
@@ -88,21 +90,27 @@ namespace P04WeatherForecastAPI.Client
             services.AddTransient<FavoriteCitiesView>();
             services.AddTransient<CarsView>();
             services.AddTransient<ShopProductsView>();
+            services.AddTransient<CarBrandView>();
         }
 
         private void ConfigureHttpClients(IServiceCollection services, AppSettings appSettingsSection)
         {
             var productUriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
             {
-                Path = appSettingsSection.BaseProductEndpoint.Base_url,
+                Path = appSettingsSection.BaseProductEndpoint.Base_url
             };
             var carUriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
             {
-                Path = appSettingsSection.CarsEndpoint.Base_url,
+                Path = appSettingsSection.CarsEndpoint.Base_url
+            };
+            var carBrandUriBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
+            {
+                Path = appSettingsSection.CarBrandsEndpoint.Base_url
             };
             //Microsoft.Extensions.Http
             services.AddHttpClient<IProductService, ProductService>(client => client.BaseAddress = productUriBuilder.Uri);
             services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = carUriBuilder.Uri);
+            services.AddHttpClient<ICarBrandService, CarBrandService>(client => client.BaseAddress = carBrandUriBuilder.Uri);
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
