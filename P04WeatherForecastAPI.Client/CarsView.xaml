@@ -11,7 +11,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <Label Content="{Binding Brand}"></Label>
+                        <Label Content="{Binding CarBrand.Name}"></Label>
                         <Label Content="{Binding Power}"></Label>
                     </StackPanel>
                 </DataTemplate>

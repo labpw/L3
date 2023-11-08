@@ -1,0 +1,33 @@
+﻿@using P06Shop.Shared.Cars;
+@model IEnumerable<Car>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CarBrand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Power)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CarBrand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Power)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
