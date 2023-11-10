@@ -1,0 +1,42 @@
+﻿@page
+@model P06Shop.Shared.Cars.CarBrand;
+
+<h2>Create New Car Brand</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        <div class="form-group">
+            <label class="control-label col-md-2" for="Name">Name</label>
+            <div class="col-md-10">
+                <form asp-action="Create">
+                    @Html.AntiForgeryToken()
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Name)
+                    @Html.TextBoxFor(model => model.OriginCountry, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.OriginCountry)
+                    <input type="submit" value="Save" class="btn btn-default" />
+                </form>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

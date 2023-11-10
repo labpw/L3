@@ -1,0 +1,39 @@
+﻿@using P06Shop.Shared.Cars;
+@model IEnumerable<CarBrand>
+
+<h2>Car Brands</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OriginCountry)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var carBrand in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => carBrand.Id)</td>
+                <td>@Html.DisplayFor(modelItem => carBrand.Name)</td>
+                <td>@Html.DisplayFor(modelItem => carBrand.OriginCountry)</td>
+                <td>
+                    @Html.ActionLink("Details", "Details", new { id = carBrand.Id }) |
+                    @Html.ActionLink("Edit", "Edit", new { id = carBrand.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = carBrand.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>

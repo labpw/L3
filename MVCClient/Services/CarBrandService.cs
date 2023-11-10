@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using P04WeatherForecastAPI.Client.Configuration;
 using P06Shop.Shared;
 using P06Shop.Shared.Cars;
@@ -8,8 +9,17 @@ using System.Text;
 
 namespace MVCClient.Services
 {
-    public class CarBrandService(HttpClient httpClient, AppSettings appSettings) : ICarBrandService
+    public class CarBrandService : ICarBrandService
     {
+        private readonly AppSettings appSettings;
+        private readonly HttpClient httpClient;
+
+        public CarBrandService(HttpClient httpClient, IOptions<AppSettings> appSettings)
+        {
+            this.appSettings = appSettings.Value;
+            this.httpClient = httpClient;
+        }
+
         public async Task<ServiceResponse> CreateCarBrandAsync(CarBrand carBrand)
         {
             var json = JsonConvert.SerializeObject(carBrand);

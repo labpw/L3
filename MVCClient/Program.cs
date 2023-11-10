@@ -23,6 +23,7 @@ var carBrandsURIBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
 
 builder.Services.Configure<AppSettings>(appSettings);
 builder.Services.AddSingleton<ICarService, CarService>();
+builder.Services.AddSingleton<ICarBrandService, CarBrandService>();
 builder.Services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = carsURIBuilder.Uri);
 builder.Services.AddHttpClient<ICarBrandService, CarBrandService>(client => client.BaseAddress = carBrandsURIBuilder.Uri);
 var app = builder.Build();
