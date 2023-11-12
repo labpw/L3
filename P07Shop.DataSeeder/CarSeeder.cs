@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using P06Shop.Shared.Cars;
-using P06Shop.Shared.Shop;
 using Person = P06Shop.Shared.Cars.Person;
 
 namespace P07Shop.DataSeeder

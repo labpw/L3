@@ -1,7 +1,6 @@
 using MVCClient.Services;
 using P04WeatherForecastAPI.Client.Configuration;
 using P06Shop.Shared.Services.CarService;
-using P06Shop.Shared.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
 

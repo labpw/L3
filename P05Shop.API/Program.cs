@@ -1,11 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using P05Shop.API;
 using P05Shop.API.Services.CarService;
-using P05Shop.API.Services.ProductService;
 using P06Shop.API.Services.CarBrandService;
 using P06Shop.API.Services.PersonService;
 using P06Shop.Shared.Services.CarService;
-using P06Shop.Shared.Services.ProductService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +16,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<ICarBrandService, CarBrandService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
