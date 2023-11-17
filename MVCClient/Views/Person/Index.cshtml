@@ -1,0 +1,29 @@
+@using P06Shop.Shared.Cars
+
+@model IEnumerable<Person>
+
+<h2>People</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone Number</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var person in Model)
+        {
+            <tr>
+                <td>@person.Name</td>
+                <td>@person.PhoneNumber</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = person.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = person.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.ActionLink("Create New", "Create")

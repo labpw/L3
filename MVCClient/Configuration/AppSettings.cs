@@ -14,6 +14,7 @@ namespace P04WeatherForecastAPI.Client.Configuration
 
         public CRUDEndpoints CarsEndpoint { get; set; }
         public CRUDEndpoints CarBrandsEndpoint { get; set; }
+        public CRUDEndpoints PeopleEndpoint { get; set; }
 
     }
 }
