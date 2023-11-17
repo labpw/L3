@@ -12,5 +12,6 @@ namespace P06Shop.API.Services.PersonService
         Task<ServiceResponse> DeletePersonAsync(int personId);
         Task<ServiceResponse> UpdatePersonAsync(Person person);
         Task<ServiceResponse> CreatePersonAsync(Person person);
+        Task<ServiceResponse<Person>> GetPersonByIdAsync(int id);
     }
 }

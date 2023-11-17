@@ -13,5 +13,6 @@ namespace P04WeatherForecastAPI.Client.Configuration
         public string Update { get; set; }
         public string Delete { get; set; }
         public string Create { get; set; }
+        public object GetById { get; set; }
     }
 }
