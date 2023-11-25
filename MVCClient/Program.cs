@@ -1,6 +1,8 @@
+using MVCClient.Repositories;
 using MVCClient.Services;
 using P04WeatherForecastAPI.Client.Configuration;
 using P06Shop.API.Services.PersonService;
+using P06Shop.Shared.Repositories;
 using P06Shop.Shared.Services.CarService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,12 +28,15 @@ var peopleURIBuilder = new UriBuilder(appSettingsSection.BaseAPIUrl)
 //Microsoft.Extensions.Http
 
 builder.Services.Configure<AppSettings>(appSettings);
-builder.Services.AddSingleton<ICarService, CarService>();
-builder.Services.AddSingleton<IPersonService, PersonService>();
-builder.Services.AddSingleton<ICarBrandService, CarBrandService>();
-builder.Services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = carsURIBuilder.Uri);
-builder.Services.AddHttpClient<IPersonService, PersonService>(client => client.BaseAddress = peopleURIBuilder.Uri);
-builder.Services.AddHttpClient<ICarBrandService, CarBrandService>(client => client.BaseAddress = carBrandsURIBuilder.Uri);
+builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddSingleton<ICarRepository, CarRepository>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddSingleton<IPersonRepository, PersonRepository>();
+builder.Services.AddSingleton<ICarBrandRepository, CarBrandRepository>();
+builder.Services.AddScoped<ICarBrandService, CarBrandService>();
+builder.Services.AddHttpClient<ICarRepository, CarRepository>(client => client.BaseAddress = carsURIBuilder.Uri);
+builder.Services.AddHttpClient<IPersonRepository, PersonRepository>(client => client.BaseAddress = peopleURIBuilder.Uri);
+builder.Services.AddHttpClient<ICarBrandRepository, CarBrandRepository>(client => client.BaseAddress = carBrandsURIBuilder.Uri);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
