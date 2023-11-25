@@ -31,11 +31,14 @@ namespace P05Shop.API.Controllers
         public async Task<IActionResult> CreateCar([FromBody] Car car)
         {
             var response = await _carService.CreateCarAsync(car);
-            car = _carService.GetCarsAsync().Result.Data.FirstOrDefault(e => e.Id == car.Id);
+            
             if (response.Success)
             {
-                return CreatedAtAction(nameof(GetCars), new { id = car.Id },
-                    new { car.Id, car.CarBrand, car.PreviousOwner, car.Power, car.Model });
+                var createdCar = _carService.GetCarsAsync ().Result.Data.FirstOrDefault (e => e.Id == car.Id);
+
+                if (createdCar != null)
+                    return CreatedAtAction(nameof(GetCars), new { id = createdCar.Id },
+                        new { createdCar.Id, createdCar.CarBrand, createdCar.PreviousOwner, createdCar.Power, createdCar.Model });
             }
             return BadRequest(response.Message);
         }
