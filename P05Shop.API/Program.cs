@@ -11,7 +11,6 @@ public class Program
 {
     private static void Main (string[] args)
     {
-
         var builder = WebApplication.CreateBuilder (args);
 
         builder.Services.AddDbContext<DataBaseContext> (options => options.UseNpgsql ("Server=localhost;Username=postgres;Database=postgres"));
