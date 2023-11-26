@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using P06Shop.Shared.Cars;
 using P06Shop.Shared.Services.CarService;
 
 namespace MVCClient.Controllers
@@ -37,15 +38,21 @@ namespace MVCClient.Controllers
         // POST: CarBrandController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(IFormCollection collection)
         {
+            if(!ModelState.IsValid)
+            {
+                return Problem("Invalid model state.");
+            }
             try
             {
+                CarBrand carBrand = new CarBrand { Id = 0, Name = collection["Name"], OriginCountry = collection["OriginCountry"] };
+                await carBrandService.CreateCarBrandAsync(carBrand);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception e)
             {
-                return View();
+                return Problem(e.Message);
             }
         }
 

@@ -68,7 +68,9 @@ namespace P06Shop.API.Services.PersonService
             var response = new ServiceResponse();
             try
             {
-                var existingPerson = await dataBaseContext.People.FirstOrDefaultAsync(p => p.Id == person.Id);
+                var existingPerson = await dataBaseContext.People.FirstOrDefaultAsync(
+                    p => p.Id == person.Id
+                );
                 if (existingPerson != null)
                 {
                     existingPerson.Name = person.Name;
@@ -106,6 +108,32 @@ namespace P06Shop.API.Services.PersonService
             {
                 response.Success = false;
                 response.Message = "Error while creating person: " + ex.Message;
+            }
+            return response;
+        }
+
+        public async Task<ServiceResponse<Person>> GetPersonByIdAsync(int id)
+        {
+            var response = new ServiceResponse<Person>();
+            try
+            {
+                var person = await dataBaseContext.People.FirstOrDefaultAsync(p => p.Id == id);
+                if (person != null)
+                {
+                    response.Data = person;
+                    response.Success = true;
+                    response.Message = "Person retrieved successfully.";
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "Person not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Error while retrieving person: " + ex.Message;
             }
             return response;
         }

@@ -29,6 +29,22 @@ namespace P05Shop.API.Controllers
             return BadRequest(response.Message);
         }
 
+        
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPersonById(int id)
+        {
+            var response = await _personService.GetPersonByIdAsync(id);
+            if (response.Success)
+            {
+                return Ok(response.Data);
+            }
+            else if (response.Data == null)
+            {
+                return NotFound(response.Message);
+            }
+            return BadRequest(response.Message);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreatePerson([FromBody] Person person)
         {
