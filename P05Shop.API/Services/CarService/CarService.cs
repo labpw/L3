@@ -4,6 +4,7 @@ using P06Shop.Shared.Services.CarService;
 using P07Shop.DataSeeder;
 using P06Shop.API.Services.PersonService;
 using Microsoft.EntityFrameworkCore;
+using P05Shop.API.Repositories.Interfaces;
 
 namespace P05Shop.API.Services.CarService
 {
@@ -13,11 +14,15 @@ namespace P05Shop.API.Services.CarService
         private readonly IPersonService personService;
         private readonly ICarBrandService carBrandService;
 
-        public CarService(DataBaseContext dataBaseContext, IPersonService personService, ICarBrandService carBrandService)
+        private readonly ICarRepository _carRepository;
+
+        public CarService(DataBaseContext dataBaseContext, IPersonService personService, ICarBrandService carBrandService, ICarRepository carRepository)
         {
             this.dataBaseContext = dataBaseContext;
             this.carBrandService = carBrandService;
             this.personService = personService;
+
+            _carRepository = carRepository;
         }
 
         public async Task<ServiceResponse<List<Car>>> GetCarsAsync()
@@ -42,13 +47,13 @@ namespace P05Shop.API.Services.CarService
             var response = new ServiceResponse();
             try
             {
-                var carToRemove = dataBaseContext.Cars.FirstOrDefault(c => c.Id == carId);
+                var carToRemove = _carRepository.GetCarById(carId);
                 if (carToRemove != null)
                 {
-                    dataBaseContext.Cars.Remove(carToRemove);
+                    _carRepository.DeleteCar(carToRemove);
+
                     response.Success = true;
                     response.Message = "Car deleted successfully.";
-                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -70,16 +75,18 @@ namespace P05Shop.API.Services.CarService
             try
             {
                 await ValidateCar(car);
-                var existingCar = dataBaseContext.Cars.FirstOrDefault(c => c.Id == car.Id);
+                var existingCar = _carRepository.GetCarById (car.Id);
                 if (existingCar != null)
                 {
                     existingCar.Model = car.Model;
                     existingCar.Power = car.Power;
                     existingCar.CarBrand = car.CarBrand;
                     existingCar.PreviousOwner = car.PreviousOwner;
+
+                    _carRepository.UpdateCar(existingCar);
+
                     response.Success = true;
                     response.Message = "Car updated successfully.";
-                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -101,10 +108,10 @@ namespace P05Shop.API.Services.CarService
             try
             {
                 await ValidateCar(car);
-                dataBaseContext.Cars.Add(car);
+                _carRepository.AddCar(car);
+
                 response.Success = true;
                 response.Message = "Car created successfully.";
-                await dataBaseContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -127,12 +134,18 @@ namespace P05Shop.API.Services.CarService
 
         private async Task<bool> DoesPreviousOwnerOfCarExist(Car car)
         {
-            return car.PreviousOwnerId == null || !(await personService.GetPeopleAsync()).Data.Any(e => e.Id == car.PreviousOwnerId);
+            if (car.PreviousOwner == null)
+                return false;
+            else
+                return !(await personService.GetPeopleAsync()).Data.Any(e => e.Id == car.PreviousOwnerId);
         }
 
         private async Task<bool> DoesBrandOfCarExist(Car car)
         {
-            return (await carBrandService.GetCarBrandsAsync()).Data.Any(e => e.Id == car.CarBrandId);
+            if (car.CarBrand == null)
+                return false;
+            else
+                return (await carBrandService.GetCarBrandsAsync()).Data.Any(e => e.Id == car.CarBrandId);
         }
     }
 }

@@ -7,16 +7,20 @@ using P06Shop.Shared.Cars;
 using P06Shop.Shared;
 using P05Shop.API;
 using Microsoft.EntityFrameworkCore;
+using P05Shop.API.Repositories;
+using P05Shop.API.Repositories.Interfaces;
 
 namespace P06Shop.API.Services.CarBrandService
 {
     public class CarBrandService : ICarBrandService
     {
         private DataBaseContext dataBaseContext;
+        private readonly ICarBrandRepository _carBrandRepository;
 
-        public CarBrandService(DataBaseContext dataBaseContext)
+        public CarBrandService(DataBaseContext dataBaseContext, ICarBrandRepository carBrandRepository)
         {
             this.dataBaseContext = dataBaseContext;
+            this._carBrandRepository = carBrandRepository;
         }
 
         public async Task<ServiceResponse<List<CarBrand>>> GetCarBrandsAsync()
@@ -24,7 +28,7 @@ namespace P06Shop.API.Services.CarBrandService
             var response = new ServiceResponse<List<CarBrand>>();
             try
             {
-                response.Data = await dataBaseContext.CarBrands.ToListAsync();
+                response.Data = _carBrandRepository.GetAllCarBrads();
                 response.Success = true;
                 response.Message = "Car brands retrieved successfully.";
             }
@@ -41,13 +45,13 @@ namespace P06Shop.API.Services.CarBrandService
             var response = new ServiceResponse();
             try
             {
-                var carBrandToRemove = await dataBaseContext.CarBrands.FirstOrDefaultAsync(cb => cb.Id == carBrandId);
+                var carBrandToRemove = _carBrandRepository.GetCarBrandById (carBrandId);
                 if (carBrandToRemove != null)
                 {
-                    dataBaseContext.CarBrands.Remove(carBrandToRemove);
+                    _carBrandRepository.DeleteCarBrand(carBrandToRemove);
+
                     response.Success = true;
                     response.Message = "Car brand deleted successfully.";
-                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -68,15 +72,16 @@ namespace P06Shop.API.Services.CarBrandService
             var response = new ServiceResponse();
             try
             {
-                var existingCarBrand = await dataBaseContext.CarBrands.FirstOrDefaultAsync(cb => cb.Id == carBrand.Id);
+                var existingCarBrand = _carBrandRepository.GetCarBrandById (carBrand.Id);
                 if (existingCarBrand != null)
                 {
                     existingCarBrand.Name = carBrand.Name;
                     existingCarBrand.OriginCountry = carBrand.OriginCountry;
-                    dataBaseContext.CarBrands.Update(existingCarBrand);
+
+                    _carBrandRepository.UpdateCarBrand (existingCarBrand);
+
                     response.Success = true;
                     response.Message = "Car brand updated successfully.";
-                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -97,10 +102,9 @@ namespace P06Shop.API.Services.CarBrandService
             var response = new ServiceResponse();
             try
             {
-                await dataBaseContext.CarBrands.AddAsync(carBrand);
+                _carBrandRepository.AddCarBrand (carBrand);
                 response.Success = true;
                 response.Message = "Car brand created successfully.";
-                await dataBaseContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {

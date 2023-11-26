@@ -29,9 +29,17 @@ namespace P06Shop.Shared.Cars
             Power = 0;
         }
 
-        public Car(string brand, int power)
+        public Car(string model, int power)
         {
-            Model = brand;
+            Model = model;
+            Power = power;
+        }
+
+        public Car (CarBrand brand, Person owenr, string model, int power)
+        {
+            CarBrand = brand;
+            PreviousOwner = owenr;
+            Model = model;
             Power = power;
         }
     }

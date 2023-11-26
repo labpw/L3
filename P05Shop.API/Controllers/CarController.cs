@@ -34,11 +34,11 @@ namespace P05Shop.API.Controllers
             
             if (response.Success)
             {
-                var createdCar = _carService.GetCarsAsync ().Result.Data.FirstOrDefault (e => e.Id == car.Id);
+                //var createdCar = _carService.GetCarsAsync ().Result.Data.FirstOrDefault (e => e.Id == car.Id);
 
-                if (createdCar != null)
-                    return CreatedAtAction(nameof(GetCars), new { id = createdCar.Id },
-                        new { createdCar.Id, createdCar.CarBrand, createdCar.PreviousOwner, createdCar.Power, createdCar.Model });
+                //if (createdCar != null)
+                    return CreatedAtAction(nameof(GetCars), new { id = car.Id },
+                        new { car.Id, car.CarBrand, car.PreviousOwner, car.Power, car.Model });
             }
             return BadRequest(response.Message);
         }
@@ -62,7 +62,7 @@ namespace P05Shop.API.Controllers
             var response = await _carService.DeleteCarAsync(id);
             if (response.Success)
             {
-                return RedirectToAction(nameof(GetCars));  
+                return NoContent ();
             }
             return BadRequest(response.Message);
         }

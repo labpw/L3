@@ -7,16 +7,19 @@ using P06Shop.Shared.Cars;
 using P06Shop.Shared;
 using P05Shop.API;
 using Microsoft.EntityFrameworkCore;
+using P05Shop.API.Repositories.Interfaces;
 
 namespace P06Shop.API.Services.PersonService
 {
     public class PersonService : IPersonService
     {
         private readonly DataBaseContext dataBaseContext;
+        private readonly IPersonRepository _personRepository;
 
-        public PersonService(DataBaseContext dataBaseContext)
+        public PersonService(DataBaseContext dataBaseContext, IPersonRepository personRepository)
         {
             this.dataBaseContext = dataBaseContext;
+            _personRepository = personRepository;
         }
 
         public async Task<ServiceResponse<List<Person>>> GetPeopleAsync()
@@ -24,7 +27,7 @@ namespace P06Shop.API.Services.PersonService
             var response = new ServiceResponse<List<Person>>();
             try
             {
-                response.Data = await dataBaseContext.People.ToListAsync();
+                response.Data = _personRepository.GetAllPerson ();
                 response.Success = true;
                 response.Message = "People retrieved successfully.";
             }
@@ -41,13 +44,13 @@ namespace P06Shop.API.Services.PersonService
             var response = new ServiceResponse();
             try
             {
-                var personToRemove = dataBaseContext.People.FirstOrDefault(p => p.Id == personId);
+                var personToRemove = _personRepository.GetPersonById (personId);
                 if (personToRemove != null)
                 {
-                    dataBaseContext.People.Remove(personToRemove);
+                    _personRepository.DeletePerson (personToRemove);
+
                     response.Success = true;
                     response.Message = "Person deleted successfully.";
-                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -68,17 +71,16 @@ namespace P06Shop.API.Services.PersonService
             var response = new ServiceResponse();
             try
             {
-                var existingPerson = await dataBaseContext.People.FirstOrDefaultAsync(
-                    p => p.Id == person.Id
-                );
+                var existingPerson = _personRepository.GetPersonById (person.Id);
                 if (existingPerson != null)
                 {
                     existingPerson.Name = person.Name;
                     existingPerson.PhoneNumber = person.PhoneNumber;
-                    dataBaseContext.People.Update(existingPerson);
+
+                    _personRepository.UpdatePerson (existingPerson);
+
                     response.Success = true;
                     response.Message = "Person updated successfully.";
-                    await dataBaseContext.SaveChangesAsync();
                 }
                 else
                 {
@@ -99,10 +101,10 @@ namespace P06Shop.API.Services.PersonService
             var response = new ServiceResponse();
             try
             {
-                await dataBaseContext.People.AddAsync(person);
+                _personRepository.AddPerson (person);
+
                 response.Success = true;
                 response.Message = "Person created successfully.";
-                await dataBaseContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {
